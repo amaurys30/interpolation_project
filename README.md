@@ -1,5 +1,7 @@
-✅ README.md — Proyecto: Software de Interpolación y Extrapolación (Tema B)
-📌 Software de Interpolación y Extrapolación — Tema B
+✅ README.md — Proyecto: Software de Interpolación y Extrapolación 
+
+📌 Software de Interpolación y Extrapolación 
+
 
 Proyecto Final — Análisis de Técnicas Numéricas · 2025
 Autores: Amaurys Castro – Daniel Jiménez
@@ -126,12 +128,16 @@ x	y
 0.0	1.5
 1.2	2.8
 2.1	3.4
+
 ...	...
 
 IMPORTANTE:
 ✔️ La primera columna es x
+
 ✔️ La segunda columna es y
+
 ✔️ No importa si el CSV tiene encabezado o no (el software lo detecta)
+
 
 Ejemplo de archivo válido:
 
