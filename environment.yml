@@ -1,0 +1,13 @@
+name: interpolation_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - dash==2.17.0
+      - plotly==5.22.0
+      - numpy==1.26.4
+      - pandas==2.2.2
+      - scipy==1.10.1
+      - gunicorn==20.1.0
