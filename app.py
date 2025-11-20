@@ -180,7 +180,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
             html.Button("Exportar resumen CSV", id='export-csv', style={
                 'width':'100%','padding':'10px','background':'#8e44ad','color':'white','border':'none','borderRadius':'5px'
             }),
-            dcc.Download(id="download-results")
+            dcc.Download(id="download-results"),
             html.Br(), html.Br(),
             html.Div("Nota: Las tablas individuales muestran los pares (x_evaluado, y_estimado) para cada método.")
         ]),
