@@ -474,14 +474,20 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
 def export_results(n, last_run):
     if not last_run:
         return dash.no_update
+    
     df_results = pd.DataFrame(last_run.get('results', []))
     df_combined = pd.DataFrame(last_run.get('combined', []))
+
+    # generar CSV en memoria
     buf = io.StringIO()
     df_results.to_csv(buf, index=False)
     buf.write("\n")
     df_combined.to_csv(buf, index=False)
-    csv_bytes = buf.getvalue().encode()
-    return dcc.send_bytes(lambda: csv_bytes, "interpolation_summary.csv")
+
+    return dcc.send_bytes(
+        lambda: buf.getvalue().encode('utf-8'),
+        "interpolation_summary.csv"
+    )
 
 # ----------------- RUN -----------------
 if __name__ == '__main__':
