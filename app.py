@@ -225,7 +225,9 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
 
     # store para guardar último run (para exportar)
     dcc.Store(id='last-run-store'),
-    dcc.Store(id='stored-data')
+    dcc.Store(id='stored-data'),
+    dcc.Download(id="download-results")
+
 ])
 
 # ----------------- CALLBACK: almacenar CSV cargado -----------------
