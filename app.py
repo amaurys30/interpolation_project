@@ -468,12 +468,20 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
     return fig_overlay, df_results.to_dict('records'), individual_children, combined_table, store_payload
 
 # ----------------- CALLBACK: export CSV usando last-run-store -----------------
+
 @app.callback(
     Output("about-modal", "children"),
     Input("open-about", "n_clicks"),
+    Input("close-about", "n_clicks"),
     prevent_initial_call=True
 )
-def show_about(n):
+def toggle_about(open_click, close_click):
+
+    # si se presiona “Cerrar”
+    if dash.callback_context.triggered_id == "close-about":
+        return ""
+
+    # si se presiona “Acerca de”
     about_text = """
     Acerca de este software
 
@@ -572,23 +580,16 @@ Este software es de uso académico y no está destinado a uso comercial.
     return html.Div(
         style={
             'backgroundColor': 'rgba(0,0,0,0.6)',
-            'position': 'fixed',
-            'top': 0,
-            'left': 0,
-            'width': '100%',
-            'height': '100%',
-            'display': 'flex',
-            'alignItems': 'center',
-            'justifyContent': 'center',
-            'zIndex': 9999
+            'position': 'fixed','top': 0,'left': 0,
+            'width': '100%','height': '100%',
+            'display': 'flex','alignItems': 'center',
+            'justifyContent': 'center','zIndex': 9999
         },
         children=[
             html.Div(
                 style={
-                    'backgroundColor':'white',
-                    'padding':'20px',
-                    'borderRadius':'8px',
-                    'width':'50%',
+                    'backgroundColor':'white','padding':'20px',
+                    'borderRadius':'8px','width':'50%',
                     'boxShadow':'0 0 10px rgba(0,0,0,0.3)',
                     'textAlign':'left'
                 },
@@ -596,25 +597,14 @@ Este software es de uso académico y no está destinado a uso comercial.
                     html.H2("Acerca de"),
                     html.Pre(about_text, style={'whiteSpace':'pre-wrap'}),
                     html.Button("Cerrar", id="close-about", style={
-                        'marginTop':'10px',
-                        'padding':'8px',
-                        'background':'#c0392b',
-                        'color':'white',
-                        'border':'none',
-                        'borderRadius':'5px'
+                        'marginTop':'10px','padding':'8px',
+                        'background':'#c0392b','color':'white',
+                        'border':'none','borderRadius':'5px'
                     })
                 ]
             )
         ]
     )
-
-@app.callback(
-    Output("about-modal", "children"),
-    Input("close-about", "n_clicks"),
-    prevent_initial_call=True
-)
-def close_modal(n):
-    return ""
 
 
 # ----------------- RUN -----------------
