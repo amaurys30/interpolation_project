@@ -474,17 +474,20 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
 @app.callback(
     Output("about-modal","children"),
     Input("open-about","n_clicks"),
-    Input("close-about-hidden","n_clicks"),
+    Input("close-about","n_clicks"),
+    Input("modal-backdrop","n_clicks"),
     prevent_initial_call=True
 )
-def toggle_modal(open_click, close_click):
+def toggle_modal(open_click, close_click, backdrop_click):
     ctx = dash.callback_context
     if not ctx.triggered:
         return ""
 
-    if ctx.triggered_id == "close-about-hidden":
+    # Si se presiona cerrar o se hace click en el fondo
+    if ctx.triggered_id in ["close-about", "modal-backdrop"]:
         return ""
 
+    # Si se presiona abrir
     about_text = """
 Acerca de este software
 
@@ -503,20 +506,18 @@ Este sistema implementa:
 • Interpolación inversa grado 3
 • Extrapolación automática
 """
-
     return html.Div([
-        # Fondo oscuro CLICK-TO-CLOSE
-        html.Div(id="modal-backdrop",
-                 n_clicks=1,
-                 style={
-                     "position":"fixed",
-                     "top":0,"left":0,
-                     "width":"100%","height":"100%",
-                     "backgroundColor":"rgba(0,0,0,0.6)",
-                     "zIndex":9998
-                 }),
-
-        # Contenido del modal (scroll interno)
+        html.Div(
+            id="modal-backdrop",
+            n_clicks=1,
+            style={
+                "position":"fixed",
+                "top":0,"left":0,
+                "width":"100%","height":"100%",
+                "backgroundColor":"rgba(0,0,0,0.6)",
+                "zIndex":9998
+            }
+        ),
         html.Div(
             id="modal-content",
             style={
@@ -536,14 +537,14 @@ Este sistema implementa:
                 html.H2("Acerca de"),
                 html.Pre(about_text, style={"whiteSpace":"pre-wrap"}),
                 html.Button("Cerrar", id="close-about",
-                            style={
-                                "marginTop":"10px",
-                                "padding":"8px",
-                                "background":"#c0392b",
-                                "color":"white",
-                                "border":"none",
-                                "borderRadius":"5px"
-                            })
+                    style={
+                        "marginTop":"10px",
+                        "padding":"8px",
+                        "background":"#c0392b",
+                        "color":"white",
+                        "border":"none",
+                        "borderRadius":"5px"
+                    })
             ]
         )
     ])
