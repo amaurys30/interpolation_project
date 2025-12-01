@@ -228,7 +228,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
     ]),
 
     # store para guardar último run (para exportar)
-    html.Button(id="close-about", style={'display': 'none'}),
+    html.Button(id="close-about-hidden", style={'display': 'none'}),
     dcc.Store(id='last-run-store'),
     dcc.Store(id='stored-data'),
     dcc.Store(id="about-state", data=False),
@@ -474,7 +474,7 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
 @app.callback(
     Output("about-modal","children"),
     Input("open-about","n_clicks"),
-    Input("close-about","n_clicks"),
+    Input("close-about-hidden","n_clicks"),
     prevent_initial_call=True
 )
 def toggle_modal(open_click, close_click):
@@ -482,7 +482,7 @@ def toggle_modal(open_click, close_click):
     if not ctx.triggered:
         return ""
 
-    if ctx.triggered_id == "close-about":
+    if ctx.triggered_id == "close-about-hidden":
         return ""
 
     about_text = """
