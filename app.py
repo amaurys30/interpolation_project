@@ -227,6 +227,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
     ]),
 
     # store para guardar último run (para exportar)
+    html.Button(id="close-about", style={'display': 'none'}),
     dcc.Store(id='last-run-store'),
     dcc.Store(id='stored-data'),
     #dcc.Download(id="download-results")
