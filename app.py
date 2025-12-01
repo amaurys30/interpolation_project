@@ -137,10 +137,11 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
             html.H3("Entrada de datos", style={'marginTop':0}),
 
             html.Br(),
+            
             html.Button("Acerca de", id="open-about", style={
                 'width':'100%','padding':'10px','background':'#34495e','color':'white','border':'none','borderRadius':'5px'
             }),
-            html.Div(id="about-modal"),
+            html.Div(id="about-modal", style={'display': 'none'}),
 
             dcc.Upload(id='upload-data', children=html.Button('Cargar archivo CSV', style={
                 'width':'100%','padding':'8px','background':'#3498db','color':'white','border':'none','borderRadius':'5px'
@@ -230,6 +231,7 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'backgroundColor
     html.Button(id="close-about", style={'display': 'none'}),
     dcc.Store(id='last-run-store'),
     dcc.Store(id='stored-data'),
+    dcc.Store(id="about-state", data=False),
     #dcc.Download(id="download-results")
 
 ])
@@ -471,142 +473,84 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
 # ----------------- CALLBACK: export CSV usando last-run-store -----------------
 
 @app.callback(
+    Output("about-modal", "style"),
     Output("about-modal", "children"),
     Input("open-about", "n_clicks"),
-    Input("close-about", "n_clicks"),
-    prevent_initial_call=True
+    Input("close-about-btn", "n_clicks"),
+    State("about-state", "data"),
 )
-def toggle_about(open_click, close_click):
+def toggle_modal(open_click, close_click, current_state):
 
-    # si se presiona “Cerrar”
-    if dash.callback_context.triggered_id == "close-about":
-        return ""
+    triggered = dash.callback_context.triggered_id
 
-    # si se presiona “Acerca de”
+    if triggered == "open-about":
+        current_state = True
+    elif triggered == "close-about-btn":
+        current_state = False
+
+    if not current_state:
+        return {"display": "none"}, ""
+
     about_text = """
-    Acerca de este software
+Acerca de este software
 
-    Nombre del software: Sistema de Interpolación y Extrapolación – Proyecto Final ATN
-    Autores: Amaurys Castro De Arco, Daniel Jimenez Salcedo
-    Asignatura: Análisis de Técnicas Numéricas
-    Programa académico: Ingeniería de Sistemas
-    Universidad: Corporación Universitaria Del Caribe - CECAR
-    Año: 2025
+Nombre del software: Sistema de Interpolación y Extrapolación – Proyecto Final ATN
+Autores: Amaurys Castro De Arco, Daniel Jimenez Salcedo
+Asignatura: Análisis de Técnicas Numéricas
+Programa académico: Ingeniería de Sistemas
+Universidad: Corporación Universitaria Del Caribe - CECAR
+Año: 2025
 
-    Descripción general
+Descripción general
 
-    Este software fue desarrollado como proyecto final del curso Análisis de Técnicas Numéricas, con el objetivo de implementar de manera computacional los métodos de interpolación y extrapolación estudiados en clase. La herramienta permite cargar datos reales desde archivos CSV, aplicar múltiples métodos numéricos y visualizar los resultados de manera clara mediante gráficas y tablas comparativas.
-
-    Métodos incluidos
-
-    El sistema implementa los métodos vistos en clase:
-
-* Interpolación
-
-* Interpolación lineal
-
-* Interpolación polinomial cuadrática
-
-* Interpolación polinomial cúbica
-
-* Polinomios de Lagrange grados 1, 2 y 3
-
-* Polinomios de Newton (diferencias divididas) grados 1, 2 y 3
-
-* Interpolación inversa mediante polinomio de grado 3
-
-* Extrapolación
-
-Realizada automáticamente por los polinomios anteriores cuando se evalúan puntos fuera del rango.
-
-Características principales
-
-Carga de archivos CSV con columnas x y y.
-
-Ejecución individual o combinada de todos los métodos.
-
-Gráficas individuales por método y gráfica general comparativa.
-
-Tablas de resultados por método (x evaluados y valores estimados).
-
-Tabla combinada para comparar todos los métodos.
-
-Cálculo automático de métricas de error:
-
-RMSE
-
-MAE
-
-Error Máximo (MaxErr)
-
-Coeficiente de determinación (R²)
-
-Tecnologías utilizadas
-
-Lenguaje: Python 3
-
-Librerías: Dash, Plotly, NumPy, Pandas
-
-Arquitectura tipo Single Page Application (SPA)
-
-Guía básica de uso
-
-Cargue un archivo CSV con columnas x y y.
-
-Seleccione los métodos de interpolación deseados.
-
-Ingrese valores de x para evaluar (opcional).
-
-Ingrese valores de y para interpolación inversa (opcional).
-
-Presione “Ejecutar métodos”.
-
-Revise:
-
-Gráfica comparativa general
-
-Gráficas individuales
-
-Tablas individuales
-
-Tabla comparada con todos los métodos
-
-Métricas de error
-
-Licencia
-
-Este software es de uso académico y no está destinado a uso comercial.
+Este software fue desarrollado como proyecto final…
+(EL RESTO DE TU TEXTO)
     """
 
-    return html.Div(
+    modal = html.Div(
         style={
+            'position': 'fixed',
+            'top': 0, 'left': 0,
+            'width': '100%', 'height': '100%',
             'backgroundColor': 'rgba(0,0,0,0.6)',
-            'position': 'fixed','top': 0,'left': 0,
-            'width': '100%','height': '100%',
-            'display': 'flex','alignItems': 'center',
-            'justifyContent': 'center','zIndex': 9999
+            'display': 'flex',
+            'alignItems': 'center',
+            'justifyContent': 'center',
+            'zIndex': 9999,
         },
         children=[
             html.Div(
                 style={
-                    'backgroundColor':'white','padding':'20px',
-                    'borderRadius':'8px','width':'50%',
-                    'boxShadow':'0 0 10px rgba(0,0,0,0.3)',
-                    'textAlign':'left'
+                    'backgroundColor': 'white',
+                    'padding': '20px',
+                    'borderRadius': '10px',
+                    'width': '60%',
+                    'maxHeight': '80%',
+                    'overflowY': 'auto',
+                    'boxShadow': '0 0 12px rgba(0,0,0,0.3)',
                 },
                 children=[
                     html.H2("Acerca de"),
-                    html.Pre(about_text, style={'whiteSpace':'pre-wrap'}),
-                    html.Button("Cerrar", id="close-about", style={
-                        'marginTop':'10px','padding':'8px',
-                        'background':'#c0392b','color':'white',
-                        'border':'none','borderRadius':'5px'
-                    })
+                    html.Pre(about_text, style={'whiteSpace': 'pre-wrap'}),
+                    html.Button(
+                        "Cerrar",
+                        id="close-about-btn",
+                        style={
+                            'marginTop': '10px',
+                            'padding': '10px 20px',
+                            'background': '#c0392b',
+                            'color': 'white',
+                            'border': 'none',
+                            'borderRadius': '6px',
+                            'cursor': 'pointer'
+                        }
+                    )
                 ]
             )
         ]
     )
 
+    return {"display": "block"}, modal
 
 # ----------------- RUN -----------------
 if __name__ == '__main__':
