@@ -471,25 +471,19 @@ def run_methods(n_clicks, records, methods, xq_text, plot_mode, y_targets):
     return fig_overlay, df_results.to_dict('records'), individual_children, combined_table, store_payload
 
 # ----------------- CALLBACK: export CSV usando last-run-store -----------------
-
 @app.callback(
-    Output("about-modal", "style"),
-    Output("about-modal", "children"),
-    Input("open-about", "n_clicks"),
-    Input("close-about-btn", "n_clicks"),
-    State("about-state", "data"),
+    Output("about-modal","children"),
+    Input("open-about","n_clicks"),
+    Input("close-about","n_clicks"),
+    prevent_initial_call=True
 )
-def toggle_modal(open_click, close_click, current_state):
+def toggle_modal(open_click, close_click):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return ""
 
-    triggered = dash.callback_context.triggered_id
-
-    if triggered == "open-about":
-        current_state = True
-    elif triggered == "close-about-btn":
-        current_state = False
-
-    if not current_state:
-        return {"display": "none"}, ""
+    if ctx.triggered_id == "close-about":
+        return ""
 
     about_text = """
 Acerca de este software
@@ -501,57 +495,59 @@ Programa académico: Ingeniería de Sistemas
 Universidad: Corporación Universitaria Del Caribe - CECAR
 Año: 2025
 
-Descripción general
+Este sistema implementa:
+• Interpolación lineal
+• Polinomios cuadrático y cúbico
+• Lagrange grados 1–3
+• Newton grados 1–3
+• Interpolación inversa grado 3
+• Extrapolación automática
+"""
 
-Este software fue desarrollado como proyecto final…
-(EL RESTO DE TU TEXTO)
-    """
+    return html.Div([
+        # Fondo oscuro CLICK-TO-CLOSE
+        html.Div(id="modal-backdrop",
+                 n_clicks=1,
+                 style={
+                     "position":"fixed",
+                     "top":0,"left":0,
+                     "width":"100%","height":"100%",
+                     "backgroundColor":"rgba(0,0,0,0.6)",
+                     "zIndex":9998
+                 }),
 
-    modal = html.Div(
-        style={
-            'position': 'fixed',
-            'top': 0, 'left': 0,
-            'width': '100%', 'height': '100%',
-            'backgroundColor': 'rgba(0,0,0,0.6)',
-            'display': 'flex',
-            'alignItems': 'center',
-            'justifyContent': 'center',
-            'zIndex': 9999,
-        },
-        children=[
-            html.Div(
-                style={
-                    'backgroundColor': 'white',
-                    'padding': '20px',
-                    'borderRadius': '10px',
-                    'width': '60%',
-                    'maxHeight': '80%',
-                    'overflowY': 'auto',
-                    'boxShadow': '0 0 12px rgba(0,0,0,0.3)',
-                },
-                children=[
-                    html.H2("Acerca de"),
-                    html.Pre(about_text, style={'whiteSpace': 'pre-wrap'}),
-                    html.Button(
-                        "Cerrar",
-                        id="close-about-btn",
-                        style={
-                            'marginTop': '10px',
-                            'padding': '10px 20px',
-                            'background': '#c0392b',
-                            'color': 'white',
-                            'border': 'none',
-                            'borderRadius': '6px',
-                            'cursor': 'pointer'
-                        }
-                    )
-                ]
-            )
-        ]
-    )
-
-    return {"display": "block"}, modal
-
+        # Contenido del modal (scroll interno)
+        html.Div(
+            id="modal-content",
+            style={
+                "position":"fixed",
+                "top":"50%","left":"50%",
+                "transform":"translate(-50%, -50%)",
+                "background":"white",
+                "padding":"20px",
+                "borderRadius":"8px",
+                "width":"55%",
+                "height":"70%",
+                "overflowY":"auto",
+                "zIndex":9999,
+                "boxShadow":"0 0 12px rgba(0,0,0,0.4)"
+            },
+            children=[
+                html.H2("Acerca de"),
+                html.Pre(about_text, style={"whiteSpace":"pre-wrap"}),
+                html.Button("Cerrar", id="close-about",
+                            style={
+                                "marginTop":"10px",
+                                "padding":"8px",
+                                "background":"#c0392b",
+                                "color":"white",
+                                "border":"none",
+                                "borderRadius":"5px"
+                            })
+            ]
+        )
+    ])
+    
 # ----------------- RUN -----------------
 if __name__ == '__main__':
     app.run_server(host="0.0.0.0", port=8080, debug=False)
